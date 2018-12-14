@@ -18,5 +18,8 @@
     <ClCompile Include="ConsoleProcess.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
+    <ClCompile Include="..\OS-2\WriteInFile.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

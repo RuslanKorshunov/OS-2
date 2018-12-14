@@ -40,7 +40,7 @@ void main(VOID)
 		{
 			WaitForSingleObject(semaphore, INFINITE);
 			cout << "FP" << endl;
-			writeInFile.writeNumberInFile(ch, hFile);
+			writeInFile.writeNumberInFile(ch);
 			/*WriteFile(hFile, ch, sizeof(ch), NULL, NULL);
 			WriteFile(hFile, "\n", sizeof("\n"), NULL, NULL);*/
 		}

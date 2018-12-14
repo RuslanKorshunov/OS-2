@@ -2,10 +2,12 @@
 #include <stdio.h>
 #include <locale.h>
 #include <iostream>
+#include "../OS-2/WriteInFile.h"
 using namespace std;
 
 void main(VOID)
 {
+	WriteInFile writeInFile;
 	HANDLE semaphore = OpenSemaphore(SEMAPHORE_ALL_ACCESS, FALSE, TEXT("MainProcessSemaphore"));
 	HANDLE fileMapping = OpenFileMapping(FILE_MAP_READ, FALSE, TEXT("FileMapping"));
 
@@ -33,5 +35,6 @@ void main(VOID)
 			WaitForSingleObject(semaphore, INFINITE);
 			cout << "CP: ";
 			cout << ch << "\n";
+			writeInFile.writeInLog("CP", ch);
 		}
 }

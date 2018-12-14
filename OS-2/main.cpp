@@ -4,9 +4,10 @@
 #include <iostream>
 #include <ctime>
 #include <string>
+#include "WriteInFile.h"
 using namespace std;
 
-HANDLE hFileLog = CreateFile(TEXT("log.txt"), GENERIC_WRITE, NULL, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+//HANDLE hFileLog = CreateFile(TEXT("log.txt"), GENERIC_WRITE, NULL, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
 typedef struct
 {
@@ -45,7 +46,7 @@ BOOL createProcess(TCHAR commandLine[], processDate  pd)
 		&pd.process_information);
 }
 
-void log(char* currentProcess, char* number)
+/*void log(char* currentProcess, char* number)
 {
 	SYSTEMTIME systemtime;
 	GetLocalTime(&systemtime);
@@ -57,7 +58,7 @@ void log(char* currentProcess, char* number)
 	WriteFile(hFileLog, " ", sizeof(" "), NULL, NULL);
 	WriteFile(hFileLog, number, sizeof(number), NULL, NULL);
 	WriteFile(hFileLog, "\n", 1, NULL, NULL);
-}
+}*/
 
 void _tmain(int argc, TCHAR *argv[])
 {
@@ -66,6 +67,9 @@ void _tmain(int argc, TCHAR *argv[])
 
 	TCHAR consoleProcessCL[] = TEXT("ConsoleProcess");
 	TCHAR fileProcessCL[] = TEXT("FileProcess");
+
+	WriteInFile writeInFile;
+	writeInFile.clearFile();
 
 	int buffer[20];
 

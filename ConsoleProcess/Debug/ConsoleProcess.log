@@ -1,5 +1,7 @@
-﻿  ConsoleProcess.cpp
+﻿  WriteInFile.cpp
+  ConsoleProcess.cpp
+  Создание кода...
   .NETFramework,Version=v4.5.2.AssemblyAttributes.cpp
-  ConsoleProcess.obj : /DEBUG:FASTLINK не поддерживается, если присутствует управляемый код; выполняется перезапуск компоновки с /DEBUG:FULL
+  WriteInFile.obj : /DEBUG:FASTLINK не поддерживается, если присутствует управляемый код; выполняется перезапуск компоновки с /DEBUG:FULL
   ConsoleProcess.vcxproj -> D:\3 курс\OS-2\Debug\ConsoleProcess.exe
   ConsoleProcess.vcxproj -> D:\3 курс\OS-2\Debug\ConsoleProcess.pdb (Partial PDB)
