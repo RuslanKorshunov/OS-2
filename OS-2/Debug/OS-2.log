@@ -1,5 +1,5 @@
 ﻿  main.cpp
-main.cpp(76): warning C4244: аргумент: преобразование "time_t" в "unsigned int", возможна потеря данных
+main.cpp(79): warning C4244: аргумент: преобразование "time_t" в "unsigned int", возможна потеря данных
   WriteInFile.cpp
   Создание кода...
   .NETFramework,Version=v4.5.2.AssemblyAttributes.cpp

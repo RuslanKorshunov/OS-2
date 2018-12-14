@@ -27,16 +27,32 @@ void WriteInFile::writeInLog(char* process, char* number)
 {
 	fstream fout(FILE_LOG_NAME, ios_base::app);
 
+	/*SYSTEMTIME systemtime;
+	GetLocalTime(&systemtime);
+	string s_time = to_string(systemtime.wHour) + ':' + to_string(systemtime.wMinute) + ':' + to_string(systemtime.wSecond) + ':' + to_string(systemtime.wMilliseconds);
+	const char* ch_time = s_time.c_str();*/
+
+	fout << getTime() << "  " << process << "  " << number << endl;
+
+	fout.close();
+}
+const char* WriteInFile::getTime()
+{
 	SYSTEMTIME systemtime;
 	GetLocalTime(&systemtime);
 	string s_time = to_string(systemtime.wHour) + ':' + to_string(systemtime.wMinute) + ':' + to_string(systemtime.wSecond) + ':' + to_string(systemtime.wMilliseconds);
 	const char* ch_time = s_time.c_str();
 
-	fout << ch_time << "  " << process << "  " << number << endl;
+	return ch_time;
+}
+void WriteInFile::writeErrorInLog(char* message, int codeOfError)
+{
+	fstream fout(FILE_LOG_NAME, ios_base::app);
+
+	fout << getTime() << "  " << message << "  " << codeOfError << endl;
 
 	fout.close();
 }
-
 /*WriteInFile::WriteInFile()
 {
 hFileLog = CreateFile(TEXT("log.txt"), GENERIC_WRITE, NULL, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);

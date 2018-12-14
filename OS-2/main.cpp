@@ -7,6 +7,9 @@
 #include "WriteInFile.h"
 using namespace std;
 
+#define CREATE_PROCESS_ERROR 1
+#define MAP_VIEW_OF_FILE_ERROR 2
+
 //HANDLE hFileLog = CreateFile(TEXT("log.txt"), GENERIC_WRITE, NULL, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
 typedef struct
@@ -88,9 +91,7 @@ void _tmain(int argc, TCHAR *argv[])
 	{
 		char* ch = (char*)MapViewOfFile(fileMapping, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
 		if (ch == NULL)
-		{
-			cout << "Error of MapViewOfFile" << endl;
-		}
+			writeInFile.writeErrorInLog("Error of MapViewOfFile", MAP_VIEW_OF_FILE_ERROR);
 		for (int i = 0; i < (sizeof(buffer) / sizeof(int)) * 2; i++)
 		{
 			int index = i;
@@ -111,9 +112,9 @@ void _tmain(int argc, TCHAR *argv[])
 	else
 	{
 		if (!cpSuccess)
-			cout << "Error of ConsoleProcess's creation" << endl;
+			writeInFile.writeErrorInLog("Error of ConsoleProcess's creation", CREATE_PROCESS_ERROR);
 		if (!fpSuccess)
-			cout << "Error of FileProcess's creation" << endl;
+			writeInFile.writeErrorInLog("Error of FileProcess's creation", CREATE_PROCESS_ERROR);
 	}
 	close(consoleData);
 	close(fileData);

@@ -14,6 +14,8 @@ private:
 	/*HANDLE hFileLog;
 	HANDLE hFile;*/
 public:
+	const char* getTime();
+	void writeErrorInLog(char* message, int codeOfError);
 	void clearFile();
 	void writeNumberInFile(char* number);
 	void writeInLog(char* process, char* number);
