@@ -2,15 +2,17 @@
 #include <stdio.h>
 #include <string>
 #include <iostream>
-//#include <fstream>
 #include "WriteInFile.h"
 using namespace std;
 
 
 void WriteInFile::clearFile()
 {
-	fstream fout(FILE_NAME);
-	fout.open(FILE_LOG_NAME);
+	fstream fout(FILE_NAME, fstream::trunc|fstream::app);
+	fout << "";
+	fout.close();
+	fout.open(FILE_LOG_NAME, fstream::trunc|fstream::app);
+	fout << "";
 	fout.close();
 }
 void WriteInFile::writeNumberInFile(char*number)
@@ -27,12 +29,11 @@ void WriteInFile::writeInLog(char* process, char* number)
 {
 	fstream fout(FILE_LOG_NAME, ios_base::app);
 
-	/*SYSTEMTIME systemtime;
+	SYSTEMTIME systemtime;
 	GetLocalTime(&systemtime);
 	string s_time = to_string(systemtime.wHour) + ':' + to_string(systemtime.wMinute) + ':' + to_string(systemtime.wSecond) + ':' + to_string(systemtime.wMilliseconds);
-	const char* ch_time = s_time.c_str();*/
-
-	fout << getTime() << "  " << process << "  " << number << endl;
+	const char* ch_time = s_time.c_str();
+	fout << ch_time << "  " << process << "  " << number << endl;
 
 	fout.close();
 }
@@ -49,7 +50,11 @@ void WriteInFile::writeErrorInLog(char* message, int codeOfError)
 {
 	fstream fout(FILE_LOG_NAME, ios_base::app);
 
-	fout << getTime() << "  " << message << "  " << codeOfError << endl;
+	SYSTEMTIME systemtime;
+	GetLocalTime(&systemtime);
+	string s_time = to_string(systemtime.wHour) + ':' + to_string(systemtime.wMinute) + ':' + to_string(systemtime.wSecond) + ':' + to_string(systemtime.wMilliseconds);
+	const char* ch_time = s_time.c_str();
+	fout << ch_time << "  " << message << "  " << codeOfError << endl;
 
 	fout.close();
 }
