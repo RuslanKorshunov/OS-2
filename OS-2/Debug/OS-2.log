@@ -1,5 +1,4 @@
-﻿  main.cpp
-main.cpp(72): warning C4244: аргумент: преобразование "time_t" в "unsigned int", возможна потеря данных
+﻿  WriteInFile.cpp
   main.obj : /DEBUG:FASTLINK не поддерживается, если присутствует управляемый код; выполняется перезапуск компоновки с /DEBUG:FULL
   OS-2.vcxproj -> D:\3 курс\OS-2\Debug\OS-2.exe
   OS-2.vcxproj -> D:\3 курс\OS-2\Debug\OS-2.pdb (Partial PDB)

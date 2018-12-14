@@ -95,10 +95,10 @@ void _tmain(int argc, TCHAR *argv[])
 			string s = to_string(buffer[index]);
 			char const *str = s.c_str();
 			CopyMemory(ch, str, sizeof(int));
-			if (i % 2 == 1)
+			/*if (i % 2 == 1)
 				log("FP", ch);
 			else
-				log("CP", ch);
+				log("CP", ch);*/
 			ReleaseSemaphore(semaphore, 1, NULL);
 			Sleep(400);
 		}

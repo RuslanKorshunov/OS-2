@@ -1,4 +1,4 @@
-﻿  FileProcess.cpp
-  FileProcess.obj : /DEBUG:FASTLINK не поддерживается, если присутствует управляемый код; выполняется перезапуск компоновки с /DEBUG:FULL
+﻿  WriteInFile.cpp
+  WriteInFile.obj : /DEBUG:FASTLINK не поддерживается, если присутствует управляемый код; выполняется перезапуск компоновки с /DEBUG:FULL
   FileProcess.vcxproj -> D:\3 курс\OS-2\Debug\FileProcess.exe
   FileProcess.vcxproj -> D:\3 курс\OS-2\Debug\FileProcess.pdb (Partial PDB)
