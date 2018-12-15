@@ -5,29 +5,40 @@
 #include "../OS-2/WriteInFile.h"
 using namespace std;
 
-#define MAP_VIEW_OF_FILE_ERROR 2
+/*#define MAP_VIEW_OF_FILE_ERROR 2
 #define OPEN_SEMAPHORE_ERROR 3
-#define OPEN_FILE_MAPPING_ERROR 4
+#define OPEN_FILE_MAPPING_ERROR 4*/
 
 int main()
 {
+	DWORD lastError;
 	WriteInFile writeInFile;
 	HANDLE semaphore = OpenSemaphore(SEMAPHORE_ALL_ACCESS, FALSE, TEXT("MainProcessSemaphore"));
+	lastError = GetLastError();
+	if (lastError != 0)
+	{
+		writeInFile.writeErrorInLog("OpenSemaphore's Error", lastError);
+		return lastError;
+	}
 	HANDLE fileMapping = OpenFileMapping(FILE_MAP_WRITE, FALSE, TEXT("FileMapping"));
+	lastError = GetLastError();
+	if (lastError != 0)
+	{
+		writeInFile.writeErrorInLog("OpenFileMapping's Error", lastError);
+		return lastError;
+	}
 	//HANDLE hFile = CreateFile(TEXT("File.txt"), GENERIC_WRITE, NULL, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
+
+
 	//bool key = true;
-	if (semaphore == NULL)
+	/*if (semaphore == NULL)
 	{
-		/*cout << "Error of OpenSemaphore" << endl;
-		key = false;*/
 		writeInFile.writeErrorInLog("Error of OpenSemaphore", OPEN_SEMAPHORE_ERROR);
 		return OPEN_SEMAPHORE_ERROR;
 	}
 	if (fileMapping == NULL)
 	{
-		/*cout << "Error of OpenFileMapping" << endl;
-		key = false;*/
 		writeInFile.writeErrorInLog("Error of OpenFileMapping", OPEN_FILE_MAPPING_ERROR);
 		return OPEN_FILE_MAPPING_ERROR;
 	}
@@ -37,19 +48,24 @@ int main()
 		key = false;
 	}*/
 	char* ch = (char*)MapViewOfFile(fileMapping, FILE_MAP_WRITE, 0, 0, 0);
-	if (ch == NULL)
+	lastError = GetLastError();
+	if (lastError != 0)
 	{
-		/*cout << "Error of MapViewOfFile" << endl;
-		key = false;*/
+		writeInFile.writeErrorInLog("MapViewOfFile's Error", lastError);
+		return lastError;
+	}
+	//if (ch == NULL)
+	/*{
 		writeInFile.writeErrorInLog("Error of MapViewOfFile", MAP_VIEW_OF_FILE_ERROR);
 		return MAP_VIEW_OF_FILE_ERROR;
-	}
+	}*/
 	//if (key != false)
 	while (true)
 	{
 		WaitForSingleObject(semaphore, INFINITE);
 		cout << "FP" << endl;
 		writeInFile.writeNumberInFile(ch);
+		ReleaseSemaphore(semaphore, 1, NULL);
 		/*WriteFile(hFile, ch, sizeof(ch), NULL, NULL);
 		WriteFile(hFile, "\n", sizeof("\n"), NULL, NULL);*/
 	}

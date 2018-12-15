@@ -4,11 +4,12 @@
 #include <iostream>
 #include <ctime>
 #include <string>
+#include <system_error>
 #include "WriteInFile.h"
 using namespace std;
 
-#define CREATE_PROCESS_ERROR 1
-#define MAP_VIEW_OF_FILE_ERROR 2
+/*#define CREATE_PROCESS_ERROR 1
+#define MAP_VIEW_OF_FILE_ERROR 2*/
 
 //HANDLE hFileLog = CreateFile(TEXT("log.txt"), GENERIC_WRITE, NULL, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
@@ -63,16 +64,30 @@ BOOL createProcess(TCHAR commandLine[], processDate  pd)
 	WriteFile(hFileLog, "\n", 1, NULL, NULL);
 }*/
 
-void _tmain(int argc, TCHAR *argv[])
+int _tmain(int argc, TCHAR *argv[])
 {
+	WriteInFile writeInFile;
+	writeInFile.clearFile();
+	DWORD lastError;
+
 	HANDLE semaphore = CreateSemaphore(NULL, 0, 2, TEXT("MainProcessSemaphore"));
+	lastError = GetLastError();
+	if (lastError != 0)
+	{
+		writeInFile.writeErrorInLog("CreateSemaphore's Error", lastError);
+		return lastError;
+	}
 	HANDLE fileMapping = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, sizeof(int), TEXT("FileMapping"));;
+	lastError = GetLastError();
+	if (lastError != 0)
+	{
+		writeInFile.writeErrorInLog("CreateFileMapping's Error", lastError);
+		CloseHandle(semaphore);
+		return lastError;
+	}
 
 	TCHAR consoleProcessCL[] = TEXT("ConsoleProcess");
 	TCHAR fileProcessCL[] = TEXT("FileProcess");
-
-	WriteInFile writeInFile;
-	writeInFile.clearFile();
 
 	int buffer[20];
 
@@ -84,14 +99,38 @@ void _tmain(int argc, TCHAR *argv[])
 	processDate fileData = initializationProcDate();
 
 	BOOL cpSuccess = createProcess(consoleProcessCL, consoleData);
+	if (!cpSuccess)
+	{
+		lastError = GetLastError();
+		writeInFile.writeErrorInLog("ConsoleProcess's creation's Error", lastError);
+		CloseHandle(semaphore);
+		CloseHandle(fileMapping);
+		return lastError;
+	}
 	BOOL fpSuccess = createProcess(fileProcessCL, fileData);
+	if (!fpSuccess)
+	{
+		lastError = GetLastError();
+		writeInFile.writeErrorInLog("FileProcess's creation's ", lastError);
+		CloseHandle(semaphore);
+		CloseHandle(fileMapping);
+		return lastError;
+	}
 
 	//if (createProcess(consoleProcessCL, consoleData) && createProcess(fileProcessCL, fileData))//?
 	if (cpSuccess && fpSuccess)
 	{
 		char* ch = (char*)MapViewOfFile(fileMapping, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
 		if (ch == NULL)
-			writeInFile.writeErrorInLog("Error of MapViewOfFile", MAP_VIEW_OF_FILE_ERROR);
+		{
+			lastError = GetLastError();
+			writeInFile.writeErrorInLog("MapViewOfFile's Error", lastError);
+			close(consoleData);
+			close(fileData);
+			CloseHandle(semaphore);
+			CloseHandle(fileMapping);
+			return lastError;
+		}
 		for (int i = 0; i < (sizeof(buffer) / sizeof(int)) * 2; i++)
 		{
 			int index = i;
@@ -104,18 +143,26 @@ void _tmain(int argc, TCHAR *argv[])
 				log("FP", ch);
 			else
 				log("CP", ch);*/
-			ReleaseSemaphore(semaphore, 1, NULL);
-			Sleep(400);
+			//ReleaseSemaphore(semaphore, 1, NULL);
+			//Sleep(400);
 		}
 		UnmapViewOfFile(ch);
 	}
-	else
+	/*else
 	{
 		if (!cpSuccess)
-			writeInFile.writeErrorInLog("Error of ConsoleProcess's creation", CREATE_PROCESS_ERROR);
+		{
+			lastError = GetLastError();
+			writeInFile.writeErrorInLog("ConsoleProcess's creation's Error", lastError);
+			//writeInFile.writeErrorInLog("Error of ConsoleProcess's creation", CREATE_PROCESS_ERROR);
+		}
 		if (!fpSuccess)
-			writeInFile.writeErrorInLog("Error of FileProcess's creation", CREATE_PROCESS_ERROR);
-	}
+		{
+			lastError = GetLastError();
+			writeInFile.writeErrorInLog("FileProcess's creation's ", lastError);
+		}
+			//writeInFile.writeErrorInLog("Error of FileProcess's creation", CREATE_PROCESS_ERROR);
+	}*/
 	close(consoleData);
 	close(fileData);
 	CloseHandle(semaphore);
