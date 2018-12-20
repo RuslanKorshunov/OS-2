@@ -70,19 +70,20 @@ int _tmain(int argc, TCHAR *argv[])
 	writeInFile.clearFile();
 	DWORD lastError;
 
-	HANDLE semaphore = CreateSemaphore(NULL, 0, 2, TEXT("MainProcessSemaphore"));
+	//HANDLE semaphore = CreateSemaphore(NULL, 1, 1, TEXT("MainProcessSemaphore"));
+	HANDLE mutex = CreateMutex(NULL, TRUE, TEXT("MainProcessMutex"));
 	lastError = GetLastError();
 	if (lastError != 0)
 	{
-		writeInFile.writeErrorInLog("CreateSemaphore's Error", lastError);
+		writeInFile.writeErrorInLog("CreateSemaphore's in main Error", lastError);
 		return lastError;
 	}
 	HANDLE fileMapping = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, sizeof(int), TEXT("FileMapping"));;
 	lastError = GetLastError();
 	if (lastError != 0)
 	{
-		writeInFile.writeErrorInLog("CreateFileMapping's Error", lastError);
-		CloseHandle(semaphore);
+		writeInFile.writeErrorInLog("CreateFileMapping's in main Error", lastError);
+		CloseHandle(mutex);
 		return lastError;
 	}
 
@@ -103,7 +104,7 @@ int _tmain(int argc, TCHAR *argv[])
 	{
 		lastError = GetLastError();
 		writeInFile.writeErrorInLog("ConsoleProcess's creation's Error", lastError);
-		CloseHandle(semaphore);
+		CloseHandle(mutex);
 		CloseHandle(fileMapping);
 		return lastError;
 	}
@@ -111,8 +112,8 @@ int _tmain(int argc, TCHAR *argv[])
 	if (!fpSuccess)
 	{
 		lastError = GetLastError();
-		writeInFile.writeErrorInLog("FileProcess's creation's ", lastError);
-		CloseHandle(semaphore);
+		writeInFile.writeErrorInLog("FileProcess's creation's Error", lastError);
+		CloseHandle(mutex);
 		CloseHandle(fileMapping);
 		return lastError;
 	}
@@ -124,21 +125,25 @@ int _tmain(int argc, TCHAR *argv[])
 		if (ch == NULL)
 		{
 			lastError = GetLastError();
-			writeInFile.writeErrorInLog("MapViewOfFile's Error", lastError);
+			writeInFile.writeErrorInLog("MapViewOfFile's in main Error", lastError);
 			close(consoleData);
 			close(fileData);
-			CloseHandle(semaphore);
+			CloseHandle(mutex);
 			CloseHandle(fileMapping);
 			return lastError;
 		}
 		for (int i = 0; i < (sizeof(buffer) / sizeof(int)) * 2; i++)
 		{
+			WaitForSingleObject(mutex, INFINITE);
+			//WaitForSingleObject(semaphore, INFINITE);
 			int index = i;
 			if (i % 2 == 1)
 				index--;
 			string s = to_string(buffer[index]);
 			char const *str = s.c_str();
 			CopyMemory(ch, str, sizeof(int));
+			ReleaseMutex(mutex);
+			//ReleaseSemaphore(semaphore, 1, NULL);
 			/*if (i % 2 == 1)
 				log("FP", ch);
 			else
@@ -165,6 +170,6 @@ int _tmain(int argc, TCHAR *argv[])
 	}*/
 	close(consoleData);
 	close(fileData);
-	CloseHandle(semaphore);
+	CloseHandle(mutex);
 	CloseHandle(fileMapping);
 }

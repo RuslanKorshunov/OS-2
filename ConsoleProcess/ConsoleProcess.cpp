@@ -13,18 +13,19 @@ int main()
 {
 	DWORD lastError;
 	WriteInFile writeInFile;
-	HANDLE semaphore = OpenSemaphore(SEMAPHORE_ALL_ACCESS, FALSE, TEXT("MainProcessSemaphore"));
+	//HANDLE semaphore = OpenSemaphore(SEMAPHORE_ALL_ACCESS, FALSE, TEXT("MainProcessSemaphore"));
+	HANDLE mutex = OpenMutex(MUTEX_ALL_ACCESS, FALSE, TEXT("MainProcessMutex"));
 	lastError = GetLastError();
 	if (lastError != 0)
 	{
-		writeInFile.writeErrorInLog("OpenSemaphore's Error", lastError);
+		writeInFile.writeErrorInLog("OpenMutex's in ConsoleProcess Error", lastError);
 		return lastError;
 	}
 	HANDLE fileMapping = OpenFileMapping(FILE_MAP_READ, FALSE, TEXT("FileMapping"));
 	lastError = GetLastError();
 	if (lastError != 0)
 	{
-		writeInFile.writeErrorInLog("OpenFileMapping's Error", lastError);
+		writeInFile.writeErrorInLog("OpenFileMapping's in ConsoleProcess Error", lastError);
 		return lastError;
 	}
 
@@ -49,15 +50,17 @@ int main()
 	lastError = GetLastError();
 	if (lastError != 0)
 	{
-		writeInFile.writeErrorInLog("MapViewOfFile's Error", lastError);
+		writeInFile.writeErrorInLog("MapViewOfFile's in ConsoleProcess Error", lastError);
 		return lastError;
 	}
 	while (true)
 	{
-		WaitForSingleObject(semaphore, INFINITE);
+		WaitForSingleObject(mutex, INFINITE);
 		cout << "CP: ";
 		cout << ch << endl;
 		writeInFile.writeInLog("CP", ch);
-		ReleaseSemaphore(semaphore, 1, NULL);
+		ReleaseMutex(mutex);
+		//ReleaseSemaphore(mutex, 1, NULL);
+		//Sleep(1000);
 	}
 }

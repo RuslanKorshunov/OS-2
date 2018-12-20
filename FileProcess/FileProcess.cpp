@@ -13,18 +13,19 @@ int main()
 {
 	DWORD lastError;
 	WriteInFile writeInFile;
-	HANDLE semaphore = OpenSemaphore(SEMAPHORE_ALL_ACCESS, FALSE, TEXT("MainProcessSemaphore"));
+	//HANDLE semaphore = OpenSemaphore(SEMAPHORE_ALL_ACCESS, FALSE, TEXT("MainProcessSemaphore"));
+	HANDLE mutex = OpenMutex(MUTEX_ALL_ACCESS, FALSE, TEXT("MainProcessMutex"));
 	lastError = GetLastError();
 	if (lastError != 0)
 	{
-		writeInFile.writeErrorInLog("OpenSemaphore's Error", lastError);
+		writeInFile.writeErrorInLog("OpenMutex's in FileProcess Error", lastError);
 		return lastError;
 	}
 	HANDLE fileMapping = OpenFileMapping(FILE_MAP_WRITE, FALSE, TEXT("FileMapping"));
 	lastError = GetLastError();
 	if (lastError != 0)
 	{
-		writeInFile.writeErrorInLog("OpenFileMapping's Error", lastError);
+		writeInFile.writeErrorInLog("OpenFileMapping's in FileProcess Error", lastError);
 		return lastError;
 	}
 	//HANDLE hFile = CreateFile(TEXT("File.txt"), GENERIC_WRITE, NULL, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -51,7 +52,7 @@ int main()
 	lastError = GetLastError();
 	if (lastError != 0)
 	{
-		writeInFile.writeErrorInLog("MapViewOfFile's Error", lastError);
+		writeInFile.writeErrorInLog("MapViewOfFile's in FileProcess Error", lastError);
 		return lastError;
 	}
 	//if (ch == NULL)
@@ -62,10 +63,12 @@ int main()
 	//if (key != false)
 	while (true)
 	{
-		WaitForSingleObject(semaphore, INFINITE);
+		WaitForSingleObject(mutex, INFINITE);
 		cout << "FP" << endl;
 		writeInFile.writeNumberInFile(ch);
-		ReleaseSemaphore(semaphore, 1, NULL);
+		//ReleaseSemaphore(mutex, 1, NULL);
+		ReleaseMutex(mutex);
+		//Sleep(1000);
 		/*WriteFile(hFile, ch, sizeof(ch), NULL, NULL);
 		WriteFile(hFile, "\n", sizeof("\n"), NULL, NULL);*/
 	}
